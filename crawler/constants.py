@@ -1,5 +1,6 @@
 from enum import Enum
 
+CERTIFICATE_PATH="ca-root.pem"
 BASE_URL = "https://digitallibrary.un.org/search?ln=en&cc=Voting Data"
 
 class ParamTag(str, Enum):

@@ -1,3 +1,4 @@
+import os.path
 import requests
 from bs4 import BeautifulSoup
 
@@ -8,12 +9,18 @@ PAR_SUBJECT_MIDDLE_EAST = "MIDDLE EAST SITUATION"
 def crawl(body, vote, subject, date):
     url = build_url(body, vote, subject, date)
 
-    source_code = requests.get(url)
+    source_code = requests.get(url, verify=get_certificate())
     source_code_text = source_code.text
 
     soup_object = BeautifulSoup(source_code_text, 'html.parser')
     for line in soup_object.find_all('a', {'class': 'moreinfo'}, True, "Detailed record"):
         print(line)
+
+def get_certificate():
+   if os.path.isfile(CERTIFICATE_PATH):
+      return CERTIFICATE_PATH
+
+   return None
 
 def build_url(body, vote, subject, date):
     url = BASE_URL
