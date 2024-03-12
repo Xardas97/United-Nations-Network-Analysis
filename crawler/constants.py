@@ -1,0 +1,17 @@
+from enum import Enum
+
+BASE_URL = "https://digitallibrary.un.org/search?ln=en&cc=Voting Data"
+
+class ParamTag(str, Enum):
+   BODY = "fct__2"
+   VOTE = "fct__9"
+   SUBJECT = "fct__8"
+   DATE = "fct__3"
+
+class ParamBody(str, Enum):
+   GENERAL_ASSEMBLY = "General Assembly"
+   SECURITY_COUNCIL = "Security Council"
+
+class ParamVote(str, Enum):
+   YES = "Vote"
+   NO = "Without Vote"
