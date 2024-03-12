@@ -13,14 +13,26 @@ def crawl_all():
 
 def crawl(body, vote, subject, date):
    url = build_url(body, vote, subject, date)
-   print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]".format(body.value, vote.value, subject, date))
+   print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]\n\n".format(body.value, vote.value, subject, date))
 
    source_code = requests.get(url, verify=get_certificate())
-   source_code_text = source_code.text
 
-   soup_object = BeautifulSoup(source_code_text, 'html.parser')
-   for line in soup_object.find_all('a', {'class': 'moreinfo'}, True, "Detailed record"):
-       print(line)
+   soup_object = BeautifulSoup(source_code.text, 'html.parser')
+   for link in soup_object.find_all('a', {'class': 'moreinfo'}, True, "Detailed record"):
+      record = link.get('href')
+      print(record)
+      crawl_record(record)
+      print("\n")
+
+def crawl_record(link):
+   url = BASE_URL + link
+   source_code = requests.get(url, verify=get_certificate())
+
+   soup_object = BeautifulSoup(source_code.text, 'html.parser')
+   values = soup_object.find_all('span', {'class': 'value'})
+
+   title = values[0].string
+   print(title)
 
 def get_certificate():
    if os.path.isfile(CERTIFICATE_PATH):
@@ -29,7 +41,7 @@ def get_certificate():
    return None
 
 def build_url(body, vote, subject, date):
-    url = BASE_URL
+    url = BASE_SEARCH_URL
 
     if body:
        url = add_param(url, ParamTag.BODY, body)

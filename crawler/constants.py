@@ -3,7 +3,8 @@ from enum import Enum
 CERTIFICATE_PATH = "ca-root.pem"
 SUBJECTS_FILE_PATH = "subjects.txt"
 
-BASE_URL = "https://digitallibrary.un.org/search?ln=en&cc=Voting Data"
+BASE_URL = "https://digitallibrary.un.org"
+BASE_SEARCH_URL = BASE_URL + "/search?ln=en&cc=Voting Data"
 
 class ParamTag(str, Enum):
    BODY = "fct__2"
