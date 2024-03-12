@@ -4,17 +4,23 @@ from bs4 import BeautifulSoup
 
 from constants import *
 
-PAR_SUBJECT_MIDDLE_EAST = "MIDDLE EAST SITUATION"
+def crawl_all():
+   subjects_file = open(SUBJECTS_FILE_PATH)
+   subjects = subjects_file.read().splitlines()
+
+   subject = subjects[0]
+   crawl(ParamBody.GENERAL_ASSEMBLY, ParamVote.YES, subject, 2015)
 
 def crawl(body, vote, subject, date):
-    url = build_url(body, vote, subject, date)
+   url = build_url(body, vote, subject, date)
+   print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]".format(body.value, vote.value, subject, date))
 
-    source_code = requests.get(url, verify=get_certificate())
-    source_code_text = source_code.text
+   source_code = requests.get(url, verify=get_certificate())
+   source_code_text = source_code.text
 
-    soup_object = BeautifulSoup(source_code_text, 'html.parser')
-    for line in soup_object.find_all('a', {'class': 'moreinfo'}, True, "Detailed record"):
-        print(line)
+   soup_object = BeautifulSoup(source_code_text, 'html.parser')
+   for line in soup_object.find_all('a', {'class': 'moreinfo'}, True, "Detailed record"):
+       print(line)
 
 def get_certificate():
    if os.path.isfile(CERTIFICATE_PATH):
@@ -42,4 +48,4 @@ def build_url(body, vote, subject, date):
 def add_param(url, param_tag, param_value):
     return url + "&" + param_tag + "=" + param_value
 
-crawl(ParamBody.GENERAL_ASSEMBLY, ParamVote.YES, PAR_SUBJECT_MIDDLE_EAST, 2015)
+crawl_all()
