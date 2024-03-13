@@ -10,20 +10,30 @@ def crawl_all():
    subjects = subjects_file.read().splitlines()
 
    subject = subjects[6]
-   crawl(ParamBody.SECURITY_COUNCIL, ParamVote.YES, subject, 1999)
+   record_count = crawl(ParamBody.SECURITY_COUNCIL, ParamVote.YES, subject, 1999)
 
-def crawl(body, vote, subject, date):
-   url = build_url(body, vote, subject, date)
+   print("Total crawled: " + str(record_count))
+
+def crawl(body, vote, subject, date, first_record = 1):
+   url = build_url(body, vote, subject, date, first_record)
    print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]\n\n".format(body.value, vote.value, subject, date))
 
    source_code = requests.get(url, verify=get_certificate())
-
    soup_object = BeautifulSoup(source_code.text, 'html.parser')
+
+   record_count = 0
    for link in soup_object.find_all('a', {'class': 'moreinfo'}, string="Detailed record"):
       record = link.get('href')
       print(record)
       crawl_record(record)
+      record_count += 1
       print("\n")
+
+   nextPageTag = soup_object.find('img', {'alt': 'next'})
+   if nextPageTag:
+      record_count += crawl(body, vote, subject, date, first_record + 50)
+
+   return record_count
 
 def crawl_record(link):
    url = BASE_URL + link
@@ -49,25 +59,27 @@ def get_certificate():
 
    return None
 
-def build_url(body, vote, subject, date):
-    url = BASE_SEARCH_URL
+def build_url(body, vote, subject, date, first_record):
+   url = BASE_SEARCH_URL
 
-    if body:
-       url = add_param(url, ParamTag.BODY, body)
+   if body:
+      url = add_param(url, ParamTag.BODY, body)
 
-    if vote:
-       url = add_param(url, ParamTag.VOTE, vote)
+   if vote:
+      url = add_param(url, ParamTag.VOTE, vote)
 
-    if subject:
-       url = add_param(url, ParamTag.SUBJECT, subject)
+   if subject:
+      url = add_param(url, ParamTag.SUBJECT, subject)
 
-    if date:
-       url = add_param(url, ParamTag.DATE, str(date))
+   if date:
+      url = add_param(url, ParamTag.DATE, str(date))
 
-    return url
+   url = add_param(url, ParamTag.FIRST_RECORD, str(first_record))
+
+   return url
 
 def add_param(url, param_tag, param_value):
-    return url + "&" + param_tag + "=" + param_value
+   return url + "&" + param_tag + "=" + param_value
 
 def to_text_with_br_tags_replaced(tag):
    text = ''

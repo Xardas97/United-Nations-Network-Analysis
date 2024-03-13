@@ -11,6 +11,7 @@ class ParamTag(str, Enum):
    VOTE = "fct__9"
    SUBJECT = "fct__8"
    DATE = "fct__3"
+   FIRST_RECORD = "jrec"
 
 class ParamBody(str, Enum):
    GENERAL_ASSEMBLY = "General Assembly"
