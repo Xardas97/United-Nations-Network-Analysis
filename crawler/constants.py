@@ -4,7 +4,8 @@ CERTIFICATE_PATH = "ca-root.pem"
 SUBJECTS_FILE_PATH = "subjects.txt"
 
 BASE_URL = "https://digitallibrary.un.org"
-BASE_SEARCH_URL = BASE_URL + "/search?ln=en&cc=Voting Data"
+BASE_SEARCH_URL = BASE_URL + "/search?cc=Voting Data"
+RECORD_URL = BASE_URL + "/record/{}"
 
 class ParamTag(str, Enum):
    BODY = "fct__2"
