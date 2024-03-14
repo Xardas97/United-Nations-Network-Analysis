@@ -3,6 +3,9 @@ from enum import Enum
 CERTIFICATE_PATH = "ca-root.pem"
 SUBJECTS_FILE_PATH = "subjects.txt"
 
+DATA_FOLDER_PATH = "../data"
+RECORDS_TABLE_PATH = DATA_FOLDER_PATH + "/records.csv"
+
 BASE_URL = "https://digitallibrary.un.org"
 BASE_SEARCH_URL = BASE_URL + "/search?cc=Voting Data"
 RECORD_URL = BASE_URL + "/record/{}"

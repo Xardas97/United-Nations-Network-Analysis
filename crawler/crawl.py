@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 from constants import *
 
 class Record:
+   RECORD_TABLE_HEADER = "ID,Title,Date,Resolution,Subejcts,Voting Data"
+   RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
    RECORD_PRINT_FORMAT = "ID: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
 
    def __init__(self, id, title, date, resolution, voting_data, subject):
@@ -19,6 +21,9 @@ class Record:
    def __str__(self):
       return Record.RECORD_PRINT_FORMAT.format(self.id, self.title, self.date, self.resolution, self.subjects, self.voting_data)
 
+   def to_table_row(self):
+      return Record.RECORD_TABLE_FORMAT.format(self.id, self.title, self.date, self.resolution, self.subjects, self.voting_data)
+
 records = {}
 
 def crawl_all():
@@ -30,9 +35,19 @@ def crawl_all():
    record_count += crawl(ParamBody.SECURITY_COUNCIL, ParamVote.YES, subjects[27], 1999)
 
    print("Total crawled: " + str(record_count))
-   for _, record in records.items():
-      print("")
-      print(record.__str__())
+   save_records()
+
+def save_records():
+   print("Saving records to file...")
+
+   os.makedirs(DATA_FOLDER_PATH, exist_ok = True)
+   with open(RECORDS_TABLE_PATH, 'w') as file:
+      file.write(Record.RECORD_TABLE_HEADER)
+      for _, record in records.items():
+         table_row = record.to_table_row()
+         file.write("\n" + table_row)
+
+   print("Finished saving records!")
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:

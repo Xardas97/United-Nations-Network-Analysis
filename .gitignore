@@ -1,6 +1,9 @@
 ### Certificate File ###
 crawler/ca-root.pem
 
+### Generated Data ###
+data/
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
