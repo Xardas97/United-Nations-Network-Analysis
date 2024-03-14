@@ -6,23 +6,22 @@ from bs4 import BeautifulSoup
 from constants import *
 
 class Record:
-   RECORD_TABLE_HEADER = "ID,Title,Date,Resolution,Subejcts,Voting Data"
-   RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
-   RECORD_PRINT_FORMAT = "ID: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
+   RECORD_TABLE_HEADER = "ID,Body,Title,Date,Resolution,Subejcts,Voting Data"
+   RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
+   RECORD_PRINT_FORMAT = "ID: {}\nBody: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
 
-   def __init__(self, id, title, date, resolution, voting_data, subject):
+   def __init__(self, id, title, date, resolution, voting_data):
       self.id = id
       self.title = title
       self.date = date
       self.resolution = resolution
       self.voting_data = voting_data
-      self.subjects = { subject }
 
    def __str__(self):
-      return Record.RECORD_PRINT_FORMAT.format(self.id, self.title, self.date, self.resolution, self.subjects, self.voting_data)
+      return Record.RECORD_PRINT_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
 
    def to_table_row(self):
-      return Record.RECORD_TABLE_FORMAT.format(self.id, self.title, self.date, self.resolution, self.subjects, self.voting_data)
+      return Record.RECORD_TABLE_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
 
 records = {}
 
@@ -61,7 +60,7 @@ def crawl(body, vote, subject, date, page = 0):
    record_count = 0
    for link in soup_object.find_all('abbr', {'class': 'unapi-id'}):
       record_id = link.get('title')
-      newRecord = process_record(record_id, subject)
+      newRecord = process_record(record_id, body, subject)
       if newRecord:
          record_count += 1
 
@@ -75,11 +74,14 @@ def crawl(body, vote, subject, date, page = 0):
 
    return record_count
 
-def process_record(record_id, subject):
+def process_record(record_id, body, subject):
    existing_record = records.get(record_id)
    if not existing_record:
       print("Creating new record {}".format(record_id))
-      records[record_id] = crawl_record(record_id, subject)
+      record = crawl_record(record_id)
+      record.body = body.value if body else ""
+      record.subjects = { subject }
+      records[record_id] = record
       return True
    else:
       if subject:
@@ -87,7 +89,7 @@ def process_record(record_id, subject):
          existing_record.subjects.add(subject)
       return False
 
-def crawl_record(record_id, subject):
+def crawl_record(record_id):
    url = build_record_url(record_id)
 
    source_code = requests.get(url, verify=get_certificate())
@@ -100,7 +102,7 @@ def crawl_record(record_id, subject):
    voting_data_tag = soup_object.find('span', {'class': 'title'}, string=re.compile('^Vote\\s*$')).nextSibling
    voting_data = to_text_with_br_tags_replaced(voting_data_tag).replace("\n", ";")
 
-   return Record(record_id, title, date, resolution, voting_data, subject)
+   return Record(record_id, title, date, resolution, voting_data)
 
 def get_certificate():
    if os.path.isfile(CERTIFICATE_PATH):
