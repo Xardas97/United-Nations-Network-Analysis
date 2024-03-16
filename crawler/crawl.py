@@ -1,10 +1,6 @@
-import os.path
-import requests
-from bs4 import BeautifulSoup
-
 from parser import *
 from printer import *
-from constants import *
+from downloader import *
 
 records = {}
 
@@ -22,11 +18,7 @@ def crawl(body, vote, subject, date, page = 0):
    if page == 0:
       print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]".format(fpvp(body), fpvp(vote), fpp(subject), fpp(date)))
 
-   url = build_search_url(body, vote, subject, date, page)
-
-   source_code = requests.get(url, verify=get_certificate())
-   soup = BeautifulSoup(source_code.text, 'html.parser')
-
+   soup = Downloader.download_search_page(body, vote, subject, date, page)
    search_results = SearchResultParser.parse(soup)
 
    record_count = 0
@@ -59,46 +51,8 @@ def process_record(record_id, body, subject):
       return False
 
 def crawl_record(record_id):
-   url = build_record_url(record_id)
-
-   source_code = requests.get(url, verify=get_certificate())
-   soup = BeautifulSoup(source_code.text, 'html.parser')
-
+   soup = Downloader.download_record(record_id)
    return RecordParser.parse(soup)
-
-def get_certificate():
-   if os.path.isfile(CERTIFICATE_PATH):
-      return CERTIFICATE_PATH
-
-   return None
-
-def build_search_url(body, vote, subject, date, page):
-   url = BASE_SEARCH_URL
-
-   if body:
-      url = add_param(url, ParamTag.BODY, body)
-
-   if vote:
-      url = add_param(url, ParamTag.VOTE, vote)
-
-   if subject:
-      url = add_param(url, ParamTag.SUBJECT, subject)
-
-   if date:
-      url = add_param(url, ParamTag.DATE, str(date))
-
-   url = add_param(url, ParamTag.PER_PAGE, str(RECORDS_PER_PAGE))
-
-   first_record = page * RECORDS_PER_PAGE + 1
-   url = add_param(url, ParamTag.FIRST_RECORD, str(first_record))
-
-   return url
-
-def build_record_url(record_id):
-   return RECORD_URL.format(record_id)
-
-def add_param(url, param_tag, param_value):
-   return url + "&" + param_tag + "=" + param_value
 
 # friendly param print
 def fpp(val):
