@@ -30,6 +30,10 @@ def crawl_date(date):
       soup = Downloader.download_search_page(body, None, None, date)
       subjects = SearchResultParser.parse_subjects(soup)
 
+      if len(subjects) == 0:
+         crawl(body, None, None, date)
+         continue
+
       for subject in subjects:
          crawl(body, None, subject, date)
 

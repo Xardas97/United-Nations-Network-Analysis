@@ -41,7 +41,7 @@ class Record:
    def set_external_data(self, id, body, subject):
       self.id = id
       self.body = body.value if body else ""
-      self.subjects = { subject }
+      self.subjects = { subject } if subject else {}
 
    def __str__(self):
       return Record.RECORD_PRINT_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
