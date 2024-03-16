@@ -5,7 +5,11 @@ from downloader import *
 records = {}
 
 def crawl_all():
-   crawl_date(2024)
+   start_date = 1946 #1946
+   end_date = 2024 #2024
+
+   for date in range(start_date, end_date + 1):
+      crawl_date(date)
 
 def crawl_date(date):
    records.clear()
@@ -41,6 +45,8 @@ def crawl(body, vote, subject, date, page = 0):
 
    if page == 0:
       print("Crawled in this search: {}\n".format(record_count))
+
+   return record_count
 
 def process_record(record_id, body, subject):
    existing_record = records.get(record_id)
