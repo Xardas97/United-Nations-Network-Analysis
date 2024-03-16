@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from parser import *
+from printer import *
 from constants import *
 
 records = {}
@@ -15,22 +16,7 @@ def crawl_all():
    record_count += crawl(ParamBody.GENERAL_ASSEMBLY, None, subjects[9], 2005)
 
    print("Total crawled: " + str(record_count))
-   save_records()
-
-def save_records():
-   print("Saving records to file...")
-
-   os.makedirs(DATA_FOLDER_PATH, exist_ok = True)
-   with open(RECORDS_TABLE_PATH, 'w') as file:
-      file.write(RECORD_TABLE_HEADER)
-      for _, record in records.items():
-         table_row = to_table_row(record)
-         file.write("\n" + table_row)
-
-   print("Finished saving records!")
-
-def to_table_row(record):
-   return RECORD_TABLE_FORMAT.format(record.id, record.body, record.title, record.date, record.resolution, record.subjects, record.voting_data)
+   RecordPrinter.print_to_file(records)
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:
