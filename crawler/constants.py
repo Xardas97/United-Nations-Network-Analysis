@@ -5,6 +5,7 @@ SUBJECTS_FILE_PATH = "subjects.txt"
 
 DATA_FOLDER_PATH = "../data"
 RECORDS_TABLE_PATH = DATA_FOLDER_PATH + "/records.csv"
+RECORDS_PER_YEAR_TABLE_PATH = DATA_FOLDER_PATH + "/records-{}.csv"
 
 BASE_URL = "https://digitallibrary.un.org"
 BASE_SEARCH_URL = BASE_URL + "/search?cc=Voting Data"
@@ -36,3 +37,6 @@ class RecordRegex(str, Enum):
    DATE = '^Vote date\\s*$'
    RESOLUTION = '^Resolution\\s*$'
    VOTING_DATA = '^Vote\\s*$'
+
+class SearchResultRegex(str, Enum):
+   SUBJECT_CHECKBOX = '^desktopcheckbox(1|2)-fct__8'

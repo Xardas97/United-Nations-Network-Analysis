@@ -5,14 +5,22 @@ from downloader import *
 records = {}
 
 def crawl_all():
-   subjects_file = open(SUBJECTS_FILE_PATH)
-   subjects = subjects_file.read().splitlines()
+   crawl_date(2024)
 
-   record_count = 0
-   record_count += crawl(ParamBody.GENERAL_ASSEMBLY, None, subjects[9], 2005)
+def crawl_date(date):
+   records.clear()
 
-   print("Total crawled: " + str(record_count))
-   RecordPrinter.print_to_file(records)
+   un_bodies = [ParamBody.SECURITY_COUNCIL, ParamBody.GENERAL_ASSEMBLY]
+   for body in un_bodies:
+      print("Accessing all subjects for [Body: {}, Date: {}]\n".format(fpvp(body), fpp(date)))
+      soup = Downloader.download_search_page(body, None, None, date)
+      subjects = SearchResultParser.parse_subjects(soup)
+
+      for subject in subjects:
+         crawl(body, None, subject, date)
+
+   print("Total crawled for date {}: {}".format(date, (len(records))))
+   RecordPrinter.print_to_file(records, date)
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:
@@ -33,8 +41,6 @@ def crawl(body, vote, subject, date, page = 0):
 
    if page == 0:
       print("Crawled in this search: {}\n".format(record_count))
-
-   return record_count
 
 def process_record(record_id, body, subject):
    existing_record = records.get(record_id)

@@ -4,11 +4,12 @@ from constants import *
 
 class RecordPrinter:
    @classmethod
-   def print_to_file(cls, records):
-      print("Saving records to file...")
+   def print_to_file(cls, records, year = None):
+      records_file = RECORDS_PER_YEAR_TABLE_PATH.format(year) if year else RECORDS_TABLE_PATH
+      print("Saving {} records to {}...".format(len(records), records_file))
 
       os.makedirs(DATA_FOLDER_PATH, exist_ok = True)
-      with open(RECORDS_TABLE_PATH, 'w') as file:
+      with open(records_file, 'w') as file:
          cls.__print_to_file(file, records)
 
       print("Finished saving records!")

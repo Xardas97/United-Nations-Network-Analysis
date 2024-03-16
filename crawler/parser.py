@@ -20,6 +20,15 @@ class SearchResultParser:
 
       return SearchResults(records, has_next_page)
 
+   @staticmethod
+   def parse_subjects(soup):
+      subjects = []
+      for checkbox in soup.find_all('input', {'id': re.compile(SearchResultRegex.SUBJECT_CHECKBOX)}):
+         subject = checkbox.get('aria-label')
+         subjects.append(subject)
+
+      return subjects
+
 class Record:
    RECORD_PRINT_FORMAT = "ID: {}\nBody: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
 
