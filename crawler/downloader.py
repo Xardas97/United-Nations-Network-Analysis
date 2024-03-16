@@ -1,3 +1,4 @@
+import time
 import os.path
 import requests
 from bs4 import BeautifulSoup
@@ -8,14 +9,23 @@ class Downloader:
    @classmethod
    def download_search_page(cls, body, vote, subject, date, page = 0):
       url = cls.build_search_url(body, vote, subject, date, page)
-      source_code = requests.get(url, verify=cls.get_certificate())
+      source_code = cls.infinite_get(url)
       return BeautifulSoup(source_code.text, 'html.parser')
 
    @classmethod
    def download_record(cls, record_id):
       url = cls.build_record_url(record_id)
-      source_code = requests.get(url, verify=cls.get_certificate())
+      source_code = cls.infinite_get(url)
       return BeautifulSoup(source_code.text, 'html.parser')
+
+   @classmethod
+   def infinite_get(cls, url):
+      while True:
+         try:
+            return requests.get(url, verify=cls.get_certificate())
+         except Exception as e:
+            print("Exception during download: " + e)
+            time.sleep(10)
 
    @staticmethod
    def get_certificate():
