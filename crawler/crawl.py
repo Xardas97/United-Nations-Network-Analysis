@@ -30,8 +30,7 @@ def crawl_all():
    subjects = subjects_file.read().splitlines()
 
    record_count = 0
-   record_count += crawl(ParamBody.SECURITY_COUNCIL, ParamVote.YES, subjects[6], 1999)
-   record_count += crawl(ParamBody.SECURITY_COUNCIL, ParamVote.YES, subjects[27], 1999)
+   record_count += crawl(ParamBody.GENERAL_ASSEMBLY, None, subjects[9], 2005)
 
    print("Total crawled: " + str(record_count))
    save_records()
@@ -95,14 +94,24 @@ def crawl_record(record_id):
    source_code = requests.get(url, verify=get_certificate())
    soup_object = BeautifulSoup(source_code.text, 'html.parser')
 
-   title = soup_object.find('span', {'class': 'title'}, string=re.compile('^Title\\s*$')).nextSibling.string
-   date = soup_object.find('span', {'class': 'title'}, string=re.compile('^Vote date\\s*$')).nextSibling.contents[0].string
-   resolution = soup_object.find('span', {'class': 'title'}, string=re.compile('^Resolution\\s*$')).nextSibling.contents[0].string
+   title = get_record_value_tag(soup_object, RecordRegex.TITLE).string
+   date = get_record_value_tag(soup_object, RecordRegex.DATE).contents[0].string
+   resolution = get_record_value_tag(soup_object, RecordRegex.RESOLUTION).contents[0].string
 
-   voting_data_tag = soup_object.find('span', {'class': 'title'}, string=re.compile('^Vote\\s*$')).nextSibling
-   voting_data = to_text_with_br_tags_replaced(voting_data_tag).replace("\n", ";")
+   voting_data_tag = get_record_value_tag(soup_object, RecordRegex.VOTING_DATA)
+   voting_data = get_voting_data(voting_data_tag)
 
    return Record(record_id, title, date, resolution, voting_data)
+
+def get_record_value_tag(soup_object, value):
+   title_tag = soup_object.find('span', {'class': 'title'}, string=re.compile(value))
+   return title_tag.nextSibling if title_tag else None
+
+def get_voting_data(voting_data_tag):
+   if not voting_data_tag:
+      return "Concensus"
+
+   return to_text_with_br_tags_replaced(voting_data_tag).replace("\n", ";")
 
 def get_certificate():
    if os.path.isfile(CERTIFICATE_PATH):

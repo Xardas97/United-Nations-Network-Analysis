@@ -27,3 +27,9 @@ class ParamBody(str, Enum):
 class ParamVote(str, Enum):
    YES = "Vote"
    NO = "Without Vote"
+
+class RecordRegex(str, Enum):
+   TITLE = '^Title\\s*$'
+   DATE = '^Vote date\\s*$'
+   RESOLUTION = '^Resolution\\s*$'
+   VOTING_DATA = '^Vote\\s*$'
