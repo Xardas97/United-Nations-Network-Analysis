@@ -23,4 +23,5 @@ class RecordPrinter:
 
    @classmethod
    def to_table_row(cls, record):
-      return RECORD_TABLE_FORMAT.format(record.id, record.body, record.title, record.date, record.resolution, record.subjects, record.voting_data)
+      title = record.title.replace("\"", "\"\"")
+      return RECORD_TABLE_FORMAT.format(record.id, record.body, title, record.date, record.resolution, record.subjects, record.voting_data)
