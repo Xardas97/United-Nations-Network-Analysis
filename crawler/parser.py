@@ -68,7 +68,21 @@ class RecordParser:
       if not voting_data_tag:
          return "Concensus"
 
-      return cls.__to_text_with_br_tags_replaced(voting_data_tag).replace("\n", ";")
+      voting_data = []
+
+      raw_voting_data = cls.__to_text_with_br_tags_replaced(voting_data_tag).split("\n")
+      for vote in raw_voting_data:
+         vote = vote.replace("İ", "I")
+         if not cls.__has_voting_prefix(vote):
+            vote = "X " + vote
+
+         voting_data.append(vote)
+
+      return ";".join(voting_data)
+
+   @staticmethod
+   def __has_voting_prefix(vote):
+      return vote.startswith("A ") or vote.startswith("Y ") or vote.startswith("N ")
 
    @classmethod
    def __to_text_with_br_tags_replaced(cls, tag):
