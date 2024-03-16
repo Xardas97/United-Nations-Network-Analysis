@@ -1,3 +1,5 @@
+import sys
+
 from parser import *
 from printer import *
 from downloader import *
@@ -7,6 +9,14 @@ records = {}
 def crawl_all():
    start_date = 1946 #1946
    end_date = 2024 #2024
+
+   if len(sys.argv) == 2:
+      start_date = int(sys.argv[1])
+      end_date = start_date
+
+   if len(sys.argv) == 3:
+      start_date = int(sys.argv[1])
+      end_date = int(sys.argv[2])
 
    for date in range(start_date, end_date + 1):
       crawl_date(date)
