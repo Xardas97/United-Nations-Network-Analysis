@@ -1,27 +1,9 @@
-import re
 import os.path
 import requests
 from bs4 import BeautifulSoup
 
+from parser import *
 from constants import *
-
-class Record:
-   RECORD_TABLE_HEADER = "ID,Body,Title,Date,Resolution,Subejcts,Voting Data"
-   RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
-   RECORD_PRINT_FORMAT = "ID: {}\nBody: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
-
-   def __init__(self, id, title, date, resolution, voting_data):
-      self.id = id
-      self.title = title
-      self.date = date
-      self.resolution = resolution
-      self.voting_data = voting_data
-
-   def __str__(self):
-      return Record.RECORD_PRINT_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
-
-   def to_table_row(self):
-      return Record.RECORD_TABLE_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
 
 records = {}
 
@@ -40,12 +22,15 @@ def save_records():
 
    os.makedirs(DATA_FOLDER_PATH, exist_ok = True)
    with open(RECORDS_TABLE_PATH, 'w') as file:
-      file.write(Record.RECORD_TABLE_HEADER)
+      file.write(RECORD_TABLE_HEADER)
       for _, record in records.items():
-         table_row = record.to_table_row()
+         table_row = to_table_row(record)
          file.write("\n" + table_row)
 
    print("Finished saving records!")
+
+def to_table_row(record):
+   return RECORD_TABLE_FORMAT.format(record.id, record.body, record.title, record.date, record.resolution, record.subjects, record.voting_data)
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:
@@ -54,17 +39,17 @@ def crawl(body, vote, subject, date, page = 0):
    url = build_search_url(body, vote, subject, date, page)
 
    source_code = requests.get(url, verify=get_certificate())
-   soup_object = BeautifulSoup(source_code.text, 'html.parser')
+   soup = BeautifulSoup(source_code.text, 'html.parser')
+
+   search_results = SearchResultParser.parse(soup)
 
    record_count = 0
-   for link in soup_object.find_all('abbr', {'class': 'unapi-id'}):
-      record_id = link.get('title')
+   for record_id in search_results.records:
       newRecord = process_record(record_id, body, subject)
       if newRecord:
          record_count += 1
 
-   nextPageTag = soup_object.find('img', {'alt': 'next'})
-   if nextPageTag:
+   if search_results.has_next_page:
       print("Moving to page {}...".format(page + 1))
       record_count += crawl(body, vote, subject, date, page + 1)
 
@@ -78,8 +63,7 @@ def process_record(record_id, body, subject):
    if not existing_record:
       print("Creating new record {}".format(record_id))
       record = crawl_record(record_id)
-      record.body = body.value if body else ""
-      record.subjects = { subject }
+      record.set_external_data(record_id, body, subject)
       records[record_id] = record
       return True
    else:
@@ -92,26 +76,9 @@ def crawl_record(record_id):
    url = build_record_url(record_id)
 
    source_code = requests.get(url, verify=get_certificate())
-   soup_object = BeautifulSoup(source_code.text, 'html.parser')
+   soup = BeautifulSoup(source_code.text, 'html.parser')
 
-   title = get_record_value_tag(soup_object, RecordRegex.TITLE).string
-   date = get_record_value_tag(soup_object, RecordRegex.DATE).contents[0].string
-   resolution = get_record_value_tag(soup_object, RecordRegex.RESOLUTION).contents[0].string
-
-   voting_data_tag = get_record_value_tag(soup_object, RecordRegex.VOTING_DATA)
-   voting_data = get_voting_data(voting_data_tag)
-
-   return Record(record_id, title, date, resolution, voting_data)
-
-def get_record_value_tag(soup_object, value):
-   title_tag = soup_object.find('span', {'class': 'title'}, string=re.compile(value))
-   return title_tag.nextSibling if title_tag else None
-
-def get_voting_data(voting_data_tag):
-   if not voting_data_tag:
-      return "Concensus"
-
-   return to_text_with_br_tags_replaced(voting_data_tag).replace("\n", ";")
+   return RecordParser.parse(soup)
 
 def get_certificate():
    if os.path.isfile(CERTIFICATE_PATH):
@@ -146,17 +113,6 @@ def build_record_url(record_id):
 
 def add_param(url, param_tag, param_value):
    return url + "&" + param_tag + "=" + param_value
-
-def to_text_with_br_tags_replaced(tag):
-   text = ''
-
-   for child in tag.recursiveChildGenerator():
-      if child.name == 'br':
-         text += '\n'
-      elif isinstance(child, str):
-         text += child.strip()
-
-   return text
 
 # friendly param print
 def fpp(val):

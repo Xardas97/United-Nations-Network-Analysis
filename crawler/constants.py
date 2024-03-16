@@ -12,6 +12,9 @@ RECORD_URL = BASE_URL + "/record/{}"
 
 RECORDS_PER_PAGE = 20
 
+RECORD_TABLE_HEADER = "ID,Body,Title,Date,Resolution,Subejcts,Voting Data"
+RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
+
 class ParamTag(str, Enum):
    BODY = "fct__2"
    VOTE = "fct__9"
