@@ -11,7 +11,7 @@ BASE_URL = "https://digitallibrary.un.org"
 BASE_SEARCH_URL = BASE_URL + "/search?cc=Voting Data"
 RECORD_URL = BASE_URL + "/record/{}"
 
-RECORDS_PER_PAGE = 20
+RECORDS_PER_PAGE = 50
 
 RECORD_TABLE_HEADER = "ID,Body,Title,Date,Resolution,Subejcts,Voting Data"
 RECORD_TABLE_FORMAT = "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\""
