@@ -30,7 +30,7 @@ def crawl_date(date):
    try:
       un_bodies = [ParamBody.SECURITY_COUNCIL, ParamBody.GENERAL_ASSEMBLY]
       for body in un_bodies:
-         print("Accessing all subjects for [Body: {}, Date: {}]\n".format(fpvp(body), fpp(date)))
+         print("Accessing all subjects for [Body: {}, Date: {}]\n".format(fpvp(body), fppi(date)))
          soup = Downloader.download_search_page(body, None, None, date)
          subjects = SearchResultParser.parse_subjects(soup)
 
@@ -47,7 +47,7 @@ def crawl_date(date):
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:
-      print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]".format(fpvp(body), fpvp(vote), fpp(subject), fpp(date)))
+      print("Accessing: [Body: {}, Vote: {}, Subject: {}, Date: {}]".format(fpvp(body), fpvp(vote), fpps(subject), fppi(date)))
 
    soup = Downloader.download_search_page(body, vote, subject, date, page)
    search_results = SearchResultParser.parse(soup)
@@ -67,7 +67,8 @@ def crawl(body, vote, subject, date, page = 0):
 
    return record_count
 
-def process_record(record_id, body, subject):
+def process_record(record_id, body, _subject):
+   subject = _subject.replace("\u0302", "") if _subject else None
    existing_record = records.get(record_id)
    if not existing_record:
       print("Creating new record {}".format(record_id))
@@ -86,8 +87,12 @@ def crawl_record(record_id):
    return RecordParser.parse(soup)
 
 # friendly param print
-def fpp(val):
+def fppi(val):
    return val if val else "All"
+
+# friendly param print
+def fpps(val):
+   return val.replace("\u0302", "") if val else "All"
 
 # friendly param value print
 def fpvp(val):

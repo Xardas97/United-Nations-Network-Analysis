@@ -33,7 +33,7 @@ class SearchResultParser:
 class RecordParser:
    @classmethod
    def parse(cls, soup):
-      title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string
+      title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string.replace("\u0301", "").replace("\u0302", "")
       date = cls.__get_record_value_tag(soup, RecordRegex.DATE).contents[0].string
       resolution = cls.__get_resolution(soup)
       voting_data = cls.__get_voting_data(soup)
