@@ -1,6 +1,7 @@
 import re
 
 from constants import *
+from utility.record import *
 
 class SearchResults:
    def __init__(self, records, has_next_page):
@@ -28,23 +29,6 @@ class SearchResultParser:
          subjects.append(subject)
 
       return subjects
-
-class Record:
-   RECORD_PRINT_FORMAT = "ID: {}\nBody: {}\nTitle: {}\nDate: {}\nResolution: {}\nSubjects: {}\nVoting data: {}"
-
-   def __init__(self, title, date, resolution, voting_data):
-      self.title = title
-      self.date = date
-      self.resolution = resolution
-      self.voting_data = voting_data
-
-   def set_external_data(self, id, body, subject):
-      self.id = id
-      self.body = body.value if body else ""
-      self.subjects = { subject } if subject else {}
-
-   def __str__(self):
-      return Record.RECORD_PRINT_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)
 
 class RecordParser:
    @classmethod
