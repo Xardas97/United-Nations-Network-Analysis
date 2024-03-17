@@ -2,6 +2,7 @@ from enum import Enum
 
 CERTIFICATE_PATH = "ca-root.pem"
 SUBJECTS_FILE_PATH = "subjects.txt"
+EXPECTED_RECORD_COUNTS_FILE_PATH = "expected_record_counts.txt"
 
 DATA_FOLDER_PATH = "../data"
 RECORDS_TABLE_PATH = DATA_FOLDER_PATH + "/records.csv"
