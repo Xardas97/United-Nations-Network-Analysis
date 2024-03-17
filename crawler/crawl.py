@@ -1,8 +1,8 @@
 import sys
 
-from parser import *
-from printer import *
-from downloader import *
+from utility.parser import *
+from utility.printer import *
+from utility.downloader import *
 
 records = {}
 
