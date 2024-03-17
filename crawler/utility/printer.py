@@ -18,8 +18,11 @@ class RecordPrinter:
    def __print_to_file(cls, file, records):
       file.write(RECORD_TABLE_HEADER)
       for _, record in records.items():
-         table_row = cls.to_table_row(record)
-         file.write("\n" + table_row)
+         try:
+            table_row = cls.to_table_row(record)
+            file.write("\n" + table_row)
+         except Exception as e:
+            print("Exception while saving record {}: {}".format(record.id, e))
 
    @classmethod
    def to_table_row(cls, record):
