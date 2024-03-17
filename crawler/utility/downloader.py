@@ -22,9 +22,12 @@ class Downloader:
    def infinite_get(cls, url):
       while True:
          try:
-            return requests.get(url, verify=cls.get_certificate())
+            data = requests.get(url, verify=cls.get_certificate())
+            if data.status_code != 200:
+               raise Exception("Get request failed, status code {}".format(data.status_code))
+            return data
          except Exception as e:
-            print("Exception during download: " + e)
+            print("Pausing for 10 seconds due to exception during download: {}".format(e))
             time.sleep(10)
 
    @staticmethod
