@@ -35,7 +35,7 @@ class ParamVote(str, Enum):
 
 class RecordRegex(str, Enum):
    TITLE = '^Title\\s*$'
-   DATE = '^Vote date\\s*$'
+   DATE = '^(Vote date|Date)\\s*$'
    RESOLUTION = '^Resolution\\s*$'
    VOTING_DATA = '^Vote\\s*$'
 

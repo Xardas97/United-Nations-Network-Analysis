@@ -51,10 +51,8 @@ class RecordParser:
    def parse(cls, soup):
       title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string
       date = cls.__get_record_value_tag(soup, RecordRegex.DATE).contents[0].string
-      resolution = cls.__get_record_value_tag(soup, RecordRegex.RESOLUTION).contents[0].string
-
-      voting_data_tag = cls.__get_record_value_tag(soup, RecordRegex.VOTING_DATA)
-      voting_data = cls.__get_voting_data(voting_data_tag)
+      resolution = cls.__get_resolution(soup)
+      voting_data = cls.__get_voting_data(soup)
 
       return Record(title, date, resolution, voting_data)
 
@@ -64,7 +62,16 @@ class RecordParser:
       return title_tag.nextSibling if title_tag else None
 
    @classmethod
-   def __get_voting_data(cls, voting_data_tag):
+   def __get_resolution(cls, soup):
+      resolution_tag = cls.__get_record_value_tag(soup, RecordRegex.RESOLUTION)
+      if not resolution_tag:
+         return ""
+
+      return resolution_tag.contents[0].string
+
+   @classmethod
+   def __get_voting_data(cls, soup):
+      voting_data_tag = cls.__get_record_value_tag(soup, RecordRegex.VOTING_DATA)
       if not voting_data_tag:
          return "Concensus"
 
