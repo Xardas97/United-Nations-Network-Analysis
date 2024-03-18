@@ -37,6 +37,7 @@ class RecordRegex(str, Enum):
    TITLE = '^Title\\s*$'
    DATE = '^(Vote date|Date)\\s*$'
    RESOLUTION = '^Resolution\\s*$'
+   NOTE = '^Note\\s*$'
    VOTING_DATA = '^Vote\\s*$'
 
 class SearchResultRegex(str, Enum):

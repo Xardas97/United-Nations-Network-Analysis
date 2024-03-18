@@ -33,7 +33,8 @@ class SearchResultParser:
 class RecordParser:
    @classmethod
    def parse(cls, soup):
-      title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string.replace("\u0301", "").replace("\u0302", "")
+      title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string
+      title = title.replace("\u0301", "").replace("\u0302", "") if title else title
       date = cls.__get_record_value_tag(soup, RecordRegex.DATE).contents[0].string
       resolution = cls.__get_resolution(soup)
       voting_data = cls.__get_voting_data(soup)
@@ -57,7 +58,9 @@ class RecordParser:
    def __get_voting_data(cls, soup):
       voting_data_tag = cls.__get_record_value_tag(soup, RecordRegex.VOTING_DATA)
       if not voting_data_tag:
-         return "Concensus"
+         note_tag = cls.__get_record_value_tag(soup, RecordRegex.NOTE)
+         note = cls.__to_text_with_br_tags_replaced(note_tag)
+         return "Concensus" if cls.__is_adopted_without_a_vote(note) else "N/A"
 
       voting_data = []
 
@@ -70,6 +73,15 @@ class RecordParser:
          voting_data.append(vote)
 
       return ";".join(voting_data)
+
+   @staticmethod
+   def __is_adopted_without_a_vote(note):
+      keys = ['ADOPTED WITHOUT VOTE', 'ADOPTED WITHOUA VOTE', 'ADOPTED WITHOUTA VOTE', 'ADOPTED WITHOUT A VOTE']
+      for key in keys:
+         if key in note:
+            return True
+
+      return False
 
    @staticmethod
    def __has_voting_prefix(vote):
