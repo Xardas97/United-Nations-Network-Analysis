@@ -1,4 +1,4 @@
-import re
+import ast
 
 from constants import *
 
@@ -23,14 +23,9 @@ class Record:
       record = Record(values[2], values[3], values[4], values[6])
       record.id = values[0]
       record.body = values[1]
-      record.subjects = cls.__get_cached_record_subjects(values[5])
+      record.subjects = ast.literal_eval(values[5])
 
       return record
-
-   @staticmethod
-   def __get_cached_record_subjects(raw_subjects):
-      split_options = ['", "', '", \"', '\', "', '\', \'']
-      return set(re.split('|'.join(split_options), raw_subjects[2:-2]))
 
    def __str__(self):
       return Record.RECORD_PRINT_FORMAT.format(self.id, self.body, self.title, self.date, self.resolution, self.subjects, self.voting_data)

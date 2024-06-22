@@ -34,7 +34,6 @@ class RecordParser:
    @classmethod
    def parse(cls, soup):
       title = cls.__get_record_value_tag(soup, RecordRegex.TITLE).string
-      title = title.replace("\u0301", "").replace("\u0302", "") if title else title
       date = cls.__get_record_value_tag(soup, RecordRegex.DATE).contents[0].string
       resolution = cls.__get_resolution(soup)
       voting_data = cls.__get_voting_data(soup)
@@ -66,7 +65,6 @@ class RecordParser:
 
       raw_voting_data = cls.__to_text_with_br_tags_replaced(voting_data_tag).split("\n")
       for vote in raw_voting_data:
-         vote = vote.replace("İ", "I")
          if not cls.__has_voting_prefix(vote):
             vote = "X " + vote
 

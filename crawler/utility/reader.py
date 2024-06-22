@@ -12,7 +12,7 @@ class Reader:
       if not os.path.isfile(records_file_path):
          return {}
 
-      with open(records_file_path) as records_file:
+      with open(records_file_path, encoding="utf8") as records_file:
          raw_records = records_file.read().splitlines()
 
       for raw_record in raw_records[1:]:

@@ -66,7 +66,7 @@ def verify_mandatory_fields_for_record(record, year):
    record_id = values[0]
 
    for value in values:
-      if value == '\"\"':
+      if value == '""' or value == '"None"':
          print("[Error][{}] Missing value for record {}".format(year, record_id))
          return False
 

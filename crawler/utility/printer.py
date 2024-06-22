@@ -9,7 +9,7 @@ class RecordPrinter:
       print("Saving {} records to {}...".format(len(records), records_file))
 
       os.makedirs(DATA_FOLDER_PATH, exist_ok = True)
-      with open(records_file, 'w') as file:
+      with open(records_file, 'w', encoding="utf8") as file:
          cls.__print_to_file(file, records)
 
       print("Finished saving records!")
@@ -26,5 +26,18 @@ class RecordPrinter:
 
    @classmethod
    def to_table_row(cls, record):
-      title = record.title.replace("\"", "\"\"") if record.title else ""
-      return RECORD_TABLE_FORMAT.format(record.id, record.body, title, record.date, record.resolution, record.subjects, record.voting_data)
+      title = cls.escape_double_quptes(record.title)
+      subjects = cls.set_to_string(record.subjects)
+      return RECORD_TABLE_FORMAT.format(record.id, record.body, title, record.date, record.resolution, subjects, record.voting_data)
+
+   @classmethod
+   def set_to_string(cls, set):
+      return '{' + ', '.join(f"'{cls.escape_single_quotes(s)}'" for s in set) + '}'
+
+   @classmethod
+   def escape_single_quotes(cls, string):
+      return string.replace("'", "\\'") if string else ""
+
+   @classmethod
+   def escape_double_quptes(cls, string):
+      return string.replace("\"", "\"\"") if string else ""

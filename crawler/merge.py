@@ -19,7 +19,7 @@ def merge():
          print("Records file for year {} is missing".format(year))
          continue
 
-      records_file = pd.read_csv(record_file_path, encoding='latin-1')
+      records_file = pd.read_csv(record_file_path, keep_default_na=False)
       merged_records = pd.concat([merged_records, records_file], axis=0)
 
    print("Saving merged records...")
