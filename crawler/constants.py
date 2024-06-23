@@ -1,5 +1,7 @@
 from enum import Enum
 
+IGNORE_SUBJECTS_ARG = "--ignore-subjects"
+
 CERTIFICATE_PATH = "ca-root.pem"
 SUBJECTS_FILE_PATH = "config/subjects.txt"
 EXPECTED_RECORD_COUNTS_FILE_PATH = "config/expected_record_counts.txt"

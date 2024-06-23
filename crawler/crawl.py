@@ -1,5 +1,6 @@
 import sys
 
+from constants import *
 from utility.record import *
 from utility.parser import *
 from utility.reader import *
@@ -13,29 +14,30 @@ records = {}
 def crawl_all():
    start_date = 1946 #1946
    end_date = 2024 #2024
+   ignore_subjects = False
 
    if len(sys.argv) == 2:
       start_date = int(sys.argv[1])
       end_date = start_date
 
-   if len(sys.argv) == 3:
+   if len(sys.argv) > 2:
       start_date = int(sys.argv[1])
       end_date = int(sys.argv[2])
 
-   for date in range(start_date, end_date + 1):
-      crawl_date(date)
+   if len(sys.argv) == 4 and sys.argv[3] == IGNORE_SUBJECTS_ARG:
+      ignore_subjects = True
 
-def crawl_date(date):
+   for date in range(start_date, end_date + 1):
+      crawl_date(date, ignore_subjects)
+
+def crawl_date(date, ignore_subjects = False):
    Reader.read_records(date, records)
    print("Reusing {} record(s) for year {}".format(len(records), date))
 
    try:
       un_bodies = [ParamBody.SECURITY_COUNCIL, ParamBody.GENERAL_ASSEMBLY]
       for body in un_bodies:
-         print("Accessing all subjects for [Body: {}, Date: {}]\n".format(fpvp(body), fpp(date)))
-         soup = Downloader.download_search_page(body, None, None, date)
-         subjects = SearchResultParser.parse_subjects(soup)
-
+         subjects = get_subjects(body, date) if not ignore_subjects else []
          if len(subjects) == 0:
             crawl(body, None, None, date)
             continue
@@ -46,6 +48,11 @@ def crawl_date(date):
       print("Total crawled for date {}: {}".format(date, (len(records))))
    finally:
       RecordPrinter.print_to_file(records, date)
+
+def get_subjects(body, date):
+   print("Accessing all subjects for [Body: {}, Date: {}]\n".format(fpvp(body), fpp(date)))
+   soup = Downloader.download_search_page(body, None, None, date)
+   return SearchResultParser.parse_subjects(soup)
 
 def crawl(body, vote, subject, date, page = 0):
    if page == 0:
