@@ -55,11 +55,12 @@ class RecordParser:
 
    @classmethod
    def __get_voting_data(cls, soup):
+      if cls.__is_adopted_without_a_vote(soup):
+         return "Concensus"
+
       voting_data_tag = cls.__get_record_value_tag(soup, RecordRegex.VOTING_DATA)
       if not voting_data_tag:
-         note_tag = cls.__get_record_value_tag(soup, RecordRegex.NOTE)
-         note = cls.__to_text_with_br_tags_replaced(note_tag)
-         return "Concensus" if cls.__is_adopted_without_a_vote(note) else "N/A"
+         return "N/A"
 
       voting_data = []
 
@@ -72,9 +73,15 @@ class RecordParser:
 
       return ";".join(voting_data)
 
-   @staticmethod
-   def __is_adopted_without_a_vote(note):
+   @classmethod
+   def __is_adopted_without_a_vote(cls, soup):
+      note_tag = cls.__get_record_value_tag(soup, RecordRegex.NOTE)
+      if not note_tag:
+         return False
+
+      note = cls.__to_text_with_br_tags_replaced(note_tag)
       keys = ['ADOPTED WITHOUT VOTE', 'ADOPTED WITHOUA VOTE', 'ADOPTED WITHOUTA VOTE', 'ADOPTED WITHOUT A VOTE']
+
       for key in keys:
          if key in note:
             return True
