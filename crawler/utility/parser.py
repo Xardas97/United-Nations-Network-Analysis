@@ -66,6 +66,7 @@ class RecordParser:
 
       raw_voting_data = cls.__to_text_with_br_tags_replaced(voting_data_tag).split("\n")
       for vote in raw_voting_data:
+         vote = vote.upper()
          if not cls.__has_voting_prefix(vote):
             vote = "X " + vote
 
