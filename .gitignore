@@ -3,6 +3,7 @@ crawler/ca-root.pem
 
 ### Generated Data ###
 data/
+graphs/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
